@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collection Item Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <section class="py-20 px-5">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 id="item-title" class="text-3xl md:text-4xl font-bold text-gray-800 mb-4"></h2>
+                <div class="w-20 h-1 bg-[#FFD700] mx-auto mt-6"></div>
+            </div>
+            <div id="image-gallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Images will be dynamically inserted here -->
+            </div>
+            <div class="text-center mt-12">
+                <a href="commision.html" target="_blank">
+                    <button class="bg-[#800020] text-white hover:bg-gradient-to-r hover:from-[#FFD700] via-[#D4C29A] to-[#AA8A00] hover:text-white px-8 py-3 transition duration-300 font-medium">
+                        Commission This Item
+                    </button>
+                </a>
+                <a href="indexEng.html#products" class="ml-4">
+                    <button class="bg-gray-600 text-white hover:bg-gray-700 px-8 py-3 transition duration-300 font-medium">
+                        Back to Collections
+                    </button>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Data for detailed images
+        const itemDetails = {
+            'queen_of_sheba_main': {
+                title: '"Queen of Sheba" Collection - Spring/Summer 2024',
+                images: [
+                    { src: 'queen_sheba_closeup1.jpg', alt: 'Close-up of Queen of Sheba main piece' },
+                    { src: 'queen_sheba_side1.jpg', alt: 'Side view of Queen of Sheba main piece' },
+                    { src: 'queen_sheba_detail1.jpg', alt: 'Detail view of Queen of Sheba main piece' }
+                ]
+            },
+            'signature_kaftan': {
+                title: 'Signature Kaftan - Spring/Summer 2024',
+                images: [
+                    { src: 'kaftan_closeup1.jpg', alt: 'Close-up of Signature Kaftan' },
+                    { src: 'kaftan_side1.jpg', alt: 'Side view of Signature Kaftan' },
+                    { src: 'kaftan_detail1.jpg', alt: 'Detail view of Signature Kaftan' }
+                ]
+            },
+            'embroidered_cape': {
+                title: 'Embroidered Cape Set - Spring/Summer 2024',
+                images: [
+                    { src: 'cape_closeup1.jpg', alt: 'Close-up of Embroidered Cape Set' },
+                    { src: 'cape_side1.jpg', alt: 'Side view of Embroidered Cape Set' },
+                    { src: 'cape_detail1.jpg', alt: 'Detail view of Embroidered Cape Set' }
+                ]
+            },
+            'silk_gown': {
+                title: 'Silk Evening Gown - Spring/Summer 2024',
+                images: [
+                    { src: 'gown_closeup1.jpg', alt: 'Close-up of Silk Evening Gown' },
+                    { src: 'gown_side1.jpg', alt: 'Side view of Silk Evening Gown' },
+                    { src: 'gown_detail1.jpg', alt: 'Detail view of Silk Evening Gown' }
+                ]
+            },
+            'beaded_jacket': {
+                title: 'Beaded Jacket Ensemble - Spring/Summer 2024',
+                images: [
+                    { src: 'jacket_closeup1.jpg', alt: 'Close-up of Beaded Jacket Ensemble' },
+                    { src: 'jacket_side1.jpg', alt: 'Side view of Beaded Jacket Ensemble' },
+                    { src: 'jacket_detail1.jpg', alt: 'Detail view of Beaded Jacket Ensemble' }
+                ]
+            },
+            'lalibela_main': {
+                title: '"Lalibela" Collection - Autumn/Winter 2024',
+                images: [
+                    { src: 'lalibela_closeup1.jpg', alt: 'Close-up of Lalibela main piece' },
+                    { src: 'lalibela_side1.jpg', alt: 'Side view of Lalibela main piece' },
+                    { src: 'lalibela_detail1.jpg', alt: 'Detail view of Lalibela main piece' }
+                ]
+            },
+            'wool_cape': {
+                title: 'Wool Cape Dress - Autumn/Winter 2024',
+                images: [
+                    { src: 'wool_closeup1.jpg', alt: 'Close-up of Wool Cape Dress' },
+                    { src: 'wool_side1.jpg', alt: 'Side view of Wool Cape Dress' },
+                    { src: 'wool_detail1.jpg', alt: 'Detail view of Wool Cape Dress' }
+                ]
+            },
+            'velvet_evening': {
+                title: 'Velvet Evening Set - Autumn/Winter 2024',
+                images: [
+                    { src: 'velvet_closeup1.jpg', alt: 'Close-up of Velvet Evening Set' },
+                    { src: 'velvet_side1.jpg', alt: 'Side view of Velvet Evening Set' },
+                    { src: 'velvet_detail1.jpg', alt: 'Detail view of Velvet Evening Set' }
+                ]
+            },
+            'embroidered_coat': {
+                title: 'Embroidered Coat - Autumn/Winter 2024',
+                images: [
+                    { src: 'coat_closeup1.jpg', alt: 'Close-up of Embroidered Coat' },
+                    { src: 'coat_side1.jpg', alt: 'Side view of Embroidered Coat' },
+                    { src: 'coat_detail1.jpg', alt: 'Detail view of Embroidered Coat' }
+                ]
+            },
+            'silk_velvet_gown': {
+                title: 'Silk Velvet Gown - Autumn/Winter 2024',
+                images: [
+                    { src: 'silk_velvet_closeup1.jpg', alt: 'Close-up of Silk Velvet Gown' },
+                    { src: 'silk_velvet_side1.jpg', alt: 'Side view of Silk Velvet Gown' },
+                    { src: 'silk_velvet_detail1.jpg', alt: 'Detail view of Silk Velvet Gown' }
+                ]
+            }
+        };
+
+        // Get the item from the URL query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const item = urlParams.get('item');
+        const details = itemDetails[item] || { title: 'Item Not Found', images: [] };
+
+        // Set the title
+        document.getElementById('item-title').textContent = details.title;
+
+        // Populate the image gallery
+        const gallery = document.getElementById('image-gallery');
+        details.images.forEach(image => {
+            const div = document.createElement('div');
+            div.className = 'relative group overflow-hidden shadow-lg';
+            div.innerHTML = `
+                <img src="${image.src}" alt="${image.alt}" class="w-full h-96 object-cover transition-transform duration-300 group-hover:scale-105">
+                <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300 flex items-end p-4">
+                    <div>
+                        <h4 class="text-white">${image.alt}</h4>
+                    </div>
+                </div>
+            `;
+            gallery.appendChild(div);
+        });
+    </script>
+</body>
+</html>

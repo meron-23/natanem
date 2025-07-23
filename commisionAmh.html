@@ -1,0 +1,151 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ትዕዛዝ ያድርጉ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <section class="py-20 px-5">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">የእርስዎን ብጁ ቁራጭ ትዕዛዝ ያድርጉ</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">ከተለያዩ ስብስቦቻችን ውስጥ ብጁ ቁራጭ ይፍጠሩ። የትዕዛዝ ሂደቱን ለመጀመር ከታች ያሉትን ዝርዝሮች ይሙሉ።</p>
+                <div class="w-20 h-1 bg-[#FFD700] mx-auto mt-6"></div>
+            </div>
+            <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+                <div class="grid grid-cols-1 gap-6">
+                    <div>
+                        <label for="name" class="block text-gray-700 font-medium mb-2">ሙሉ ስም</label>
+                        <input type="text" id="name" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#FFD700]" placeholder="የእርስዎ ስም" required>
+                    </div>
+                    <div>
+                        <label for="email" class="block text-gray-700 font-medium mb-2">ኢሜይል አድራሻ</label>
+                        <input type="email" id="email" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#FFD700]" placeholder="የእርስዎ ኢሜይል" required>
+                    </div>
+                    <div>
+                        <label for="collection" class="block text-gray-700 font-medium mb-2">ስብስብ</label>
+                        <select id="collection" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#FFD700]" required>
+                            <option value="" disabled selected>ስብስብ ይምረጡ</option>
+                            <option value="queen_of_sheba">"ሳባ ንግሥት" - ጸደይ/በጋ 2024</option>
+                            <option value="lalibela">"ላሊበላ" - መጸው/ክረምት 2024</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="item" class="block text-gray-700 font-medium mb-2">ዕቃ</label>
+                        <select id="item" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#FFD700]" required>
+                            <option value="" disabled selected>ዕቃ ይምረጡ</option>
+                            <!-- Options will be dynamically populated based on collection -->
+                        </select>
+                    </div>
+                    <div>
+                        <label for="message" class="block text-gray-700 font-medium mb-2">ተጨማሪ ዝርዝሮች</label>
+                        <textarea id="message" class="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#FFD700]" rows="5" placeholder="ማንኛውንም ብጁ ማሻሻያዎች ወይም ተጨማሪ መረጃ ይግለጹ"></textarea>
+                    </div>
+                </div>
+                <div class="text-center mt-8">
+                    <button id="submit-commission" class="bg-[#800020] text-white hover:bg-gradient-to-r hover:from-[#FFD700] via-[#D4C29A] to-[#AA8A00] hover:text-white px-8 py-3 transition duration-300 font-medium">
+                        የትዕዛዝ ጥያቄ ያስገቡ
+                    </button>
+                    <a href="index.html" class="ml-4">
+                        <button class="bg-gray-600 text-white hover:bg-gray-700 px-8 py-3 transition duration-300 font-medium">
+                            ወደ ስብስቦች ተመለስ
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Item options for each collection
+        const itemOptions = {
+            'queen_of_sheba': [
+                { value: 'signature_kaftan', text: 'ተለይቶ የተሰራ ካፍታን' },
+                { value: 'embroidered_cape', text: 'የተጠለፈ ኬፕ ልብስ' },
+                { value: 'silk_gown', text: 'የሐር ምሽት ቀሚስ' },
+                { value: 'beaded_jacket', text: 'የተጌጠ ጃኬት ስብስብ' }
+            ],
+            'lalibela': [
+                { value: 'wool_cape', text: 'የሱፍ ኬፕ ቀሚስ' },
+                { value: 'velvet_evening', text: 'የቬልቬት ምሽት ልብስ' },
+                { value: 'embroidered_coat', text: 'የተጠለፈ ኮት' },
+                { value: 'silk_velvet_gown', text: 'የሐር ቬልቬት ቀሚስ' }
+            ]
+        };
+
+        // Populate item dropdown based on collection selection
+        const collectionSelect = document.getElementById('collection');
+        const itemSelect = document.getElementById('item');
+
+        collectionSelect.addEventListener('change', () => {
+            const selectedCollection = collectionSelect.value;
+            itemSelect.innerHTML = '<option value="" disabled selected>ዕቃ ይምረጡ</option>';
+            if (itemOptions[selectedCollection]) {
+                itemOptions[selectedCollection].forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.value = option.value;
+                    opt.textContent = option.text;
+                    itemSelect.appendChild(opt);
+                });
+            }
+            itemSelect.disabled = !selectedCollection;
+        });
+
+        // Handle commission submission (demo alert)
+        document.getElementById('submit-commission').addEventListener('click', () => {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const collection = document.getElementById('collection').value;
+            const item = document.getElementById('item').value;
+            const message = document.getElementById('message').value;
+
+            if (name && email && collection && item) {
+                alert(`የትዕዛዝ ጥያቄ ተልኳል!\n\nስም: ${name}\nኢሜይል: ${email}\nስብስብ: ${collection}\nዕቃ: ${item}\nዝርዝሮች: ${message || 'ምንም'}`);
+            } else {
+                alert('እባክዎ ሁሉንም አስፈላጊ መስኮች ይሙሉ።');
+            }
+        });
+    </script>
+</body>
+</html>

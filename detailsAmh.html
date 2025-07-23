@@ -1,0 +1,183 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>የስብስብ ዕቃ ዝርዝሮች</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <section class="py-20 px-5">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 id="item-title" class="text-3xl md:text-4xl font-bold text-gray-800 mb-4"></h2>
+                <div class="w-20 h-1 bg-[#FFD700] mx-auto mt-6"></div>
+            </div>
+            <div id="image-gallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Images will be dynamically inserted here -->
+            </div>
+            <div class="text-center mt-12">
+                <a href="commisionAmh.html" target="_blank">
+                    <button class="bg-[#800020] text-white hover:bg-gradient-to-r hover:from-[#FFD700] via-[#D4C29A] to-[#AA8A00] hover:text-white px-8 py-3 transition duration-300 font-medium">
+                        ይህን ዕቃ ትዕዛዝ ያድርጉ
+                    </button>
+                </a>
+                <a href="indexEng.html#products" class="ml-4">
+                    <button class="bg-gray-600 text-white hover:bg-gray-700 px-8 py-3 transition duration-300 font-medium">
+                        ወደ ስብስቦች ተመለስ
+                    </button>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Data for detailed images
+        const itemDetails = {
+            'queen_of_sheba_main': {
+                title: '"ሳባ ንግሥት" ስብስብ - ጸደይ/በጋ 2024',
+                images: [
+                    { src: 'queen_sheba_closeup1.jpg', alt: 'የሳባ ንግሥት ዋና ቁራጭ ቅርብ እይታ' },
+                    { src: 'queen_sheba_side1.jpg', alt: 'የሳባ ንግሥት ዋና ቁራጭ የጎን እይታ' },
+                    { src: 'queen_sheba_detail1.jpg', alt: 'የሳባ ንግሥት ዋና ቁራጭ ዝርዝር እይታ' }
+                ]
+            },
+            'signature_kaftan': {
+                title: 'ተለይቶ የተሰራ ካፍታን - ጸደይ/በጋ 2024',
+                images: [
+                    { src: 'kaftan_closeup1.jpg', alt: 'የተለይቶ የተሰራ ካፍታን ቅርብ እይታ' },
+                    { src: 'kaftan_side1.jpg', alt: 'የተለይቶ የተሰራ ካፍታን የጎን እይታ' },
+                    { src: 'kaftan_detail1.jpg', alt: 'የተለይቶ የተሰራ ካፍታን ዝርዝር እይታ' }
+                ]
+            },
+            'embroidered_cape': {
+                title: 'የተጠለፈ ኬፕ ልብስ - ጸደይ/በጋ 2024',
+                images: [
+                    { src: 'cape_closeup1.jpg', alt: 'የተጠለፈ ኬፕ ልብስ ቅርብ እይታ' },
+                    { src: 'cape_side1.jpg', alt: 'የተጠለፈ ኬፕ ልብስ የጎን እይታ' },
+                    { src: 'cape_detail1.jpg', alt: 'የተጠለፈ ኬፕ ልብስ ዝርዝር እይታ' }
+                ]
+            },
+            'silk_gown': {
+                title: 'የሐር ምሽት ቀሚስ - ጸደይ/በጋ 2024',
+                images: [
+                    { src: 'gown_closeup1.jpg', alt: 'የሐር ምሽት ቀሚስ ቅርብ እይታ' },
+                    { src: 'gown_side1.jpg', alt: 'የሐር ምሽት ቀሚስ የጎን እይታ' },
+                    { src: 'gown_detail1.jpg', alt: 'የሐር ምሽት ቀሚስ ዝርዝር እይታ' }
+                ]
+            },
+            'beaded_jacket': {
+                title: 'የተጌጠ ጃኬት ስብስብ - ጸደይ/በጋ 2024',
+                images: [
+                    { src: 'jacket_closeup1.jpg', alt: 'የተጌጠ ጃኬት ስብስብ ቅርብ እይታ' },
+                    { src: 'jacket_side1.jpg', alt: 'የተጌጠ ጃኬት ስብስብ የጎን እይታ' },
+                    { src: 'jacket_detail1.jpg', alt: 'የተጌጠ ጃኬት ስብስብ ዝርዝር እይታ' }
+                ]
+            },
+            'lalibela_main': {
+                title: '"ላሊበላ" ስብስብ - መጸው/ክረምት 2024',
+                images: [
+                    { src: 'lalibela_closeup1.jpg', alt: 'የላሊበላ ዋና ቁራጭ ቅርብ እይታ' },
+                    { src: 'lalibela_side1.jpg', alt: 'የላሊበላ ዋና ቁራጭ የጎን እይታ' },
+                    { src: 'lalibela_detail1.jpg', alt: 'የላሊበላ ዋና ቁራጭ ዝርዝር እይታ' }
+                ]
+            },
+            'wool_cape': {
+                title: 'የሱፍ ኬፕ ቀሚስ - መጸው/ክረምት 2024',
+                images: [
+                    { src: 'wool_closeup1.jpg', alt: 'የሱፍ ኬፕ ቀሚስ ቅርብ እይታ' },
+                    { src: 'wool_side1.jpg', alt: 'የሱፍ ኬፕ ቀሚስ የጎን እይታ' },
+                    { src: 'wool_detail1.jpg', alt: 'የሱፍ ኬፕ ቀሚስ ዝርዝር እይታ' }
+                ]
+            },
+            'velvet_evening': {
+                title: 'የቬልቬት ምሽት ልብስ - መጸው/ክረምት 2024',
+                images: [
+                    { src: 'velvet_closeup1.jpg', alt: 'የቬልቬት ምሽት ልብስ ቅርብ እይታ' },
+                    { src: 'velvet_side1.jpg', alt: 'የቬልቬት ምሽት ልብስ የጎን እይታ' },
+                    { src: 'velvet_detail1.jpg', alt: 'የቬልቬት ምሽት ልብስ ዝርዝር እይታ' }
+                ]
+            },
+            'embroidered_coat': {
+                title: 'የተጠለፈ ኮት - መጸው/ክረምት 2024',
+                images: [
+                    { src: 'coat_closeup1.jpg', alt: 'የተጠለፈ ኮት ቅርብ እይታ' },
+                    { src: 'coat_side1.jpg', alt: 'የተጠለፈ ኮት የጎን እይታ' },
+                    { src: 'coat_detail1.jpg', alt: 'የተጠለፈ ኮት ዝርዝር እይታ' }
+                ]
+            },
+            'silk_velvet_gown': {
+                title: 'የሐር ቬልቬት ቀሚስ - መጸው/ክረምት 2024',
+                images: [
+                    { src: 'silk_velvet_closeup1.jpg', alt: 'የሐር ቬልቬት ቀሚስ ቅርብ እይታ' },
+                    { src: 'silk_velvet_side1.jpg', alt: 'የሐር ቬልቬት ቀሚስ የጎን እይታ' },
+                    { src: 'silk_velvet_detail1.jpg', alt: 'የሐር ቬልቬት ቀሚስ ዝርዝር እይታ' }
+                ]
+            }
+        };
+
+        // Get the item from the URL query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const item = urlParams.get('item');
+        const details = itemDetails[item] || { title: 'ዕቃ አልተገኘም', images: [] };
+
+        // Set the title
+        document.getElementById('item-title').textContent = details.title;
+
+        // Populate the image gallery
+        const gallery = document.getElementById('image-gallery');
+        details.images.forEach(image => {
+            const div = document.createElement('div');
+            div.className = 'relative group overflow-hidden shadow-lg';
+            div.innerHTML = `
+                <img src="${image.src}" alt="${image.alt}" class="w-full h-96 object-cover transition-transform duration-300 group-hover:scale-105">
+                <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300 flex items-end p-4">
+                    <div>
+                        <h4 class="text-white">${image.alt}</h4>
+                    </div>
+                </div>
+            `;
+            gallery.appendChild(div);
+        });
+    </script>
+</body>
+</html>
